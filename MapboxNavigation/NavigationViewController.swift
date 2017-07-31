@@ -164,6 +164,13 @@ public protocol NavigationViewControllerDelegate {
 @objc(MBNavigationViewController)
 public class NavigationViewController: UIViewController, RouteMapViewControllerDelegate {
     
+    /**
+     Return the cancel button from the RouteTableViewController header view to customize them.
+     */
+    public var cancelButton: UIButton? {
+        return tableViewController?.headerView.cancelButton
+    }
+    
     /** 
      A `Route` object constructed by [MapboxDirections](https://mapbox.github.io/mapbox-navigation-ios/directions/).
      
