@@ -171,6 +171,28 @@ public class NavigationViewController: UIViewController, RouteMapViewControllerD
         return tableViewController?.headerView.cancelButton
     }
     
+    /**
+     Return the mute button from the RouteMapViewController to customize them.
+     */
+    public var muteButton: UIButton? {
+        return mapViewController?.muteButton
+    }
+    
+    /**
+     Return the recenter button from the RouteMapViewController to customize them.
+     */
+    public var recenterButton: ResumeButton? {
+        return mapViewController?.recenterButton
+    }
+    
+    /**
+     Return the report button from the RouteMapViewController to customize them.
+     */
+    public var reportButton: UIButton? {
+        return mapViewController?.reportButton
+    }
+    
+    
     /** 
      A `Route` object constructed by [MapboxDirections](https://mapbox.github.io/mapbox-navigation-ios/directions/).
      
