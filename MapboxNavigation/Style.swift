@@ -123,7 +123,7 @@ public class ResumeButton: UIControl {
     }
     
     let imageView = UIImageView(image: UIImage(named: "location", in: .mapboxNavigation, compatibleWith: nil)!.withRenderingMode(.alwaysTemplate))
-    let titleLabel = UILabel()
+    public let titleLabel = UILabel()
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
