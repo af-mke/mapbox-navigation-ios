@@ -168,7 +168,7 @@ public class NavigationViewController: UIViewController, RouteMapViewControllerD
      Return the cancel button from the RouteTableViewController header view to customize them.
      */
     public var cancelButton: UIButton? {
-        return tableViewController?.headerView.cancelButton
+        return nil //tableViewController?.headerView.cancelButton
     }
     
     /**
