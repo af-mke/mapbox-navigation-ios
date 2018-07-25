@@ -219,7 +219,7 @@ open class NavigationViewController: UIViewController {
      Return the mute button from the RouteMapViewController to customize them.
      */
     public var muteButton: UIButton? {
-        return mapViewController?.muteButton
+        return mapViewController?.navigationView.muteButton
     }
     
     /**
