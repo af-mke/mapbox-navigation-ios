@@ -226,7 +226,7 @@ open class NavigationViewController: UIViewController {
      Return the recenter button from the RouteMapViewController to customize them.
      */
     public var recenterButton: ResumeButton? {
-        return mapViewController?.recenterButton
+        return mapViewController?.navigationView.resumeButton
     }
     
     /**
