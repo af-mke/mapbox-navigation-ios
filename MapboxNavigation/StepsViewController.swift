@@ -7,7 +7,7 @@ import Turf
 open class StepsBackgroundView: UIView { }
 
 protocol StepsViewControllerDelegate: class {
-    func stepsViewController(_ viewController: StepsViewController, didSelect step: RouteStep, cell: StepTableViewCell)
+    func stepsViewController(_ viewController: StepsViewController, didSelect legIndex: Int, stepIndex: Int, cell: StepTableViewCell)
     func didDismissStepsViewController(_ viewController: StepsViewController)
 }
 
@@ -18,10 +18,11 @@ open class StepsViewController: UIViewController {
     weak var tableView: UITableView!
     weak var backgroundView: UIView!
     weak var bottomView: UIView!
+    weak var separatorBottomView: SeparatorView!
     weak var dismissButton: DismissButton!
     weak var delegate: StepsViewControllerDelegate?
     
-    typealias CompletionHandler = () -> ()
+    typealias CompletionHandler = () -> Void
     
     let cellId = "StepTableViewCellId"
     var routeProgress: RouteProgress!
@@ -29,38 +30,66 @@ open class StepsViewController: UIViewController {
     typealias StepSection = [RouteStep]
     var sections = [StepSection]()
     
-    convenience init(routeProgress: RouteProgress) {
+    var previousLegIndex: Int = NSNotFound
+    var previousStepIndex: Int = NSNotFound
+    
+    /**
+     Initializes StepsViewController with a RouteProgress object.
+     
+     - parameter routeProgress: The user's current route progress.
+     - SeeAlso: [RouteProgress](https://www.mapbox.com/mapbox-navigation-ios/navigation/0.14.1/Classes/RouteProgress.html)
+     */
+    public convenience init(routeProgress: RouteProgress) {
         self.init()
         self.routeProgress = routeProgress
     }
     
-    func rebuildDataSource() {
-        sections.removeAll()
+    @discardableResult
+    func rebuildDataSourceIfNecessary() -> Bool {
         
         let legIndex = routeProgress.legIndex
-        // Don't include the current step in the list
-        let stepIndex = routeProgress.currentLegProgress.stepIndex + 1
-        let legs = routeProgress.route.legs
+        let stepIndex = routeProgress.currentLegProgress.stepIndex
+        let didProcessCurrentStep = previousLegIndex == legIndex && previousStepIndex == stepIndex
         
-        for (index, leg) in legs.enumerated() {
-            guard index >= legIndex else { continue }
-            
-            var section = [RouteStep]()
-            for (index, step) in leg.steps.enumerated() {
-                guard index > stepIndex else { continue }
-                section.append(step)
-            }
-            
-            if !section.isEmpty {
-                sections.append(section)
+        guard !didProcessCurrentStep else { return false }
+        
+        sections.removeAll()
+        
+        let currentLeg = routeProgress.currentLeg
+        
+        // Add remaining steps for current leg
+        var section = [RouteStep]()
+        for (index, step) in currentLeg.steps.enumerated() {
+            guard index > stepIndex else { continue }
+            // Don't include the last step, it includes nothing
+            guard index < currentLeg.steps.count - 1 else { continue }
+            section.append(step)
+        }
+        
+        if !section.isEmpty {
+            sections.append(section)
+        }
+        
+        // Include all steps on any future legs
+        if !routeProgress.isFinalLeg {
+            routeProgress.route.legs.suffix(from: routeProgress.legIndex + 1).forEach {
+                var steps = $0.steps
+                // Don't include the last step, it includes nothing
+                _ = steps.popLast()
+                sections.append(steps)
             }
         }
+        
+        previousStepIndex = stepIndex
+        previousLegIndex = legIndex
+        
+        return true
     }
     
     override open func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
-        rebuildDataSource()
+        rebuildDataSourceIfNecessary()
         
         NotificationCenter.default.addObserver(self, selector: #selector(StepsViewController.progressDidChange(_:)), name: .routeControllerProgressDidChange, object: nil)
     }
@@ -70,8 +99,10 @@ open class StepsViewController: UIViewController {
     }
     
     @objc func progressDidChange(_ notification: Notification) {
-        rebuildDataSource()
-        tableView.reloadData()
+    
+        if rebuildDataSourceIfNecessary() {
+            tableView.reloadData()
+        }
     }
     
     func setupViews() {
@@ -83,9 +114,9 @@ open class StepsViewController: UIViewController {
         self.backgroundView = backgroundView
         
         backgroundView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        backgroundView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        backgroundView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         backgroundView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        backgroundView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        backgroundView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         
         let tableView = UITableView(frame: view.bounds, style: .plain)
         tableView.separatorColor = .clear
@@ -110,21 +141,31 @@ open class StepsViewController: UIViewController {
         bottomView.backgroundColor = DismissButton.appearance().backgroundColor
         view.addSubview(bottomView)
         self.bottomView = bottomView
+        
+        let separatorBottomView = SeparatorView()
+        separatorBottomView.translatesAutoresizingMaskIntoConstraints = false
+        dismissButton.addSubview(separatorBottomView)
+        self.separatorBottomView = separatorBottomView
 
         dismissButton.heightAnchor.constraint(equalToConstant: 54).isActive = true
-        dismissButton.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        dismissButton.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         dismissButton.bottomAnchor.constraint(equalTo: view.safeBottomAnchor).isActive = true
-        dismissButton.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        dismissButton.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         
         bottomView.topAnchor.constraint(equalTo: dismissButton.bottomAnchor).isActive = true
-        bottomView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        bottomView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         bottomView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        bottomView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        bottomView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        
+        separatorBottomView.topAnchor.constraint(equalTo: dismissButton.topAnchor).isActive = true
+        separatorBottomView.leadingAnchor.constraint(equalTo: dismissButton.leadingAnchor).isActive = true
+        separatorBottomView.trailingAnchor.constraint(equalTo: dismissButton.trailingAnchor).isActive = true
+        separatorBottomView.heightAnchor.constraint(equalToConstant: 1 / UIScreen.main.scale).isActive = true
         
         tableView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        tableView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         tableView.bottomAnchor.constraint(equalTo: dismissButton.topAnchor).isActive = true
-        tableView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         
         tableView.register(StepTableViewCell.self, forCellReuseIdentifier: cellId)
     }
@@ -168,9 +209,18 @@ open class StepsViewController: UIViewController {
 extension StepsViewController: UITableViewDelegate {
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let step = sections[indexPath.section][indexPath.row]
         let cell = tableView.cellForRow(at: indexPath) as! StepTableViewCell
-        delegate?.stepsViewController(self, didSelect: step, cell: cell)
+        // Since as we progress, steps are removed from the list, we need to map the row the user tapped to the actual step on the leg.
+        // If the user selects a step on future leg, all steps are going to be there.
+        var stepIndex: Int
+        if indexPath.section > 0 {
+            stepIndex = indexPath.row
+        } else {
+            stepIndex = indexPath.row + routeProgress.currentLegProgress.stepIndex
+            // For the current leg, we need to know the upcoming step.
+            stepIndex += indexPath.row + 1 > sections[indexPath.section].count ? 0 : 1
+        }
+        delegate?.stepsViewController(self, didSelect: indexPath.section, stepIndex: stepIndex, cell: cell)
     }
 }
 
@@ -190,43 +240,30 @@ extension StepsViewController: UITableViewDataSource {
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! StepTableViewCell
-        updateCell(cell, at: indexPath)
         return cell
     }
     
+    public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        updateCell(cell as! StepTableViewCell, at: indexPath)
+    }
+    
     func updateCell(_ cell: StepTableViewCell, at indexPath: IndexPath) {
+        cell.instructionsView.primaryLabel.viewForAvailableBoundsCalculation = cell
+        cell.instructionsView.secondaryLabel.viewForAvailableBoundsCalculation = cell
+        
         let step = sections[indexPath.section][indexPath.row]
         
-        cell.instructionsView.maneuverView.step = step
-       
-        let usePreviousLeg = indexPath.section != 0 && indexPath.row == 0
-        let leg = routeProgress.route.legs[indexPath.section]
-        let arrivalSecondaryInstruction = leg.destination.name
-        
-        if usePreviousLeg {
-            let leg = routeProgress.route.legs[indexPath.section-1]
-            let stepBefore = leg.steps[leg.steps.count-1]
-            if let instructions = stepBefore.instructionsDisplayedAlongStep?.last {
-                let secondaryInstruction = step.maneuverType == .arrive && arrivalSecondaryInstruction != nil ? [VisualInstructionComponent(text: arrivalSecondaryInstruction, imageURL: nil)] : instructions.secondaryTextComponents
-                cell.instructionsView.set(instructions.primaryTextComponents, secondaryInstruction: secondaryInstruction)
-            }
-            cell.instructionsView.distance = stepBefore.distance
-        } else {
-            let leg = routeProgress.route.legs[indexPath.section]
-            if let stepBefore = leg.steps.stepBefore(step) {
-                if let instructions = stepBefore.instructionsDisplayedAlongStep?.last {
-                    let secondaryInstruction = step.maneuverType == .arrive && arrivalSecondaryInstruction != nil ? [VisualInstructionComponent(text: arrivalSecondaryInstruction, imageURL: nil)] : instructions.secondaryTextComponents
-                    cell.instructionsView.set(instructions.primaryTextComponents, secondaryInstruction: secondaryInstruction)
-                }
-                cell.instructionsView.distance = stepBefore.distance
-            } else {
-                cell.instructionsView.distance = nil
-                if let instructions = step.instructionsDisplayedAlongStep?.last {
-                    let secondaryInstruction = step.maneuverType == .arrive && arrivalSecondaryInstruction != nil ? [VisualInstructionComponent(text: arrivalSecondaryInstruction, imageURL: nil)] : instructions.secondaryTextComponents
-                    cell.instructionsView.set(instructions.primaryTextComponents, secondaryInstruction: secondaryInstruction)
-                }
-            }
+        if let instructions = step.instructionsDisplayedAlongStep?.last {
+            cell.instructionsView.update(for: instructions)
+            cell.instructionsView.secondaryLabel.instruction = instructions.secondaryInstruction
         }
+        cell.instructionsView.distance = step.distance
+        
+        cell.instructionsView.stepListIndicatorView.isHidden = true
+        
+        // Hide cell separator if it’s the last row in a section
+        let isLastRowInSection = indexPath.row == sections[indexPath.section].count - 1
+        cell.separatorView.isHidden = isLastRowInSection
     }
     
     public func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -282,19 +319,24 @@ open class StepTableViewCell: UITableViewCell {
         self.instructionsView = instructionsView
         
         instructionsView.topAnchor.constraint(equalTo: topAnchor).isActive = true
-        instructionsView.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
+        instructionsView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
         instructionsView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
-        instructionsView.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
+        instructionsView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
         
         let separatorView = SeparatorView()
         separatorView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(separatorView)
         self.separatorView = separatorView
         
-        separatorView.heightAnchor.constraint(equalToConstant: 1).isActive = true
-        separatorView.leftAnchor.constraint(equalTo: instructionsView.primaryLabel.leftAnchor).isActive = true
+        separatorView.heightAnchor.constraint(equalToConstant: 1 / UIScreen.main.scale).isActive = true
+        separatorView.leadingAnchor.constraint(equalTo: instructionsView.primaryLabel.leadingAnchor).isActive = true
         separatorView.bottomAnchor.constraint(equalTo: instructionsView.bottomAnchor).isActive = true
-        separatorView.rightAnchor.constraint(equalTo: rightAnchor, constant: -18).isActive = true
+        separatorView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -18).isActive = true
+    }
+
+    open override func prepareForReuse() {
+        super.prepareForReuse()
+        instructionsView.update(for:nil)
     }
 }
 

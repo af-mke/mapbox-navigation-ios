@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="2bw-kK-8r6">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -736,11 +736,17 @@ Label  </string>
         <!--End Of Route View Controller-->
         <scene sceneID="D7g-l8-Czc">
             <objects>
-                <viewController id="WD9-Na-hrx" customClass="EndOfRouteViewController" customModule="MapboxNavigation" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="EndOfRouteViewController" id="WD9-Na-hrx" customClass="MBEndOfRouteViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="IDF-XF-2Ta" userLabel="Root" customClass="MBEndOfRouteContentView">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="400"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="unQ-4I-UPo" customClass="MBSeparatorView">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="1"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="1" id="JsN-yF-tXj"/>
+                                </constraints>
+                            </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4jh-bR-wXL" userLabel="Arrival Labels Container">
                                 <rect key="frame" x="0.0" y="16" width="375" height="60"/>
                                 <subviews>
@@ -782,11 +788,11 @@ Label  </string>
                                     <constraint firstItem="V4A-Bp-tr5" firstAttribute="top" secondItem="4jh-bR-wXL" secondAttribute="top" id="n8N-UX-05e"/>
                                 </constraints>
                             </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="evE-dd-pMr" userLabel="Rate Your Drive Container">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="evE-dd-pMr" userLabel="Rate Your Trip Container">
                                 <rect key="frame" x="0.0" y="91.5" width="375" height="54"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" alpha="0.5" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Rate your drive" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="W5U-cV-cDO" customClass="MBEndOfRouteStaticLabel">
-                                        <rect key="frame" x="139" y="0.0" width="97.5" height="17"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" alpha="0.5" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Rate your trip" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="W5U-cV-cDO" customClass="MBEndOfRouteStaticLabel">
+                                        <rect key="frame" x="144" y="0.0" width="87.5" height="17"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <color key="textColor" red="0.25098039220000001" green="0.36078431370000003" blue="0.47843137250000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                         <nil key="highlightedColor"/>
@@ -869,6 +875,7 @@ Label  </string>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
+                            <constraint firstAttribute="trailing" secondItem="unQ-4I-UPo" secondAttribute="trailing" id="1BB-nP-SYc"/>
                             <constraint firstItem="P8U-kf-mkb" firstAttribute="trailing" secondItem="evE-dd-pMr" secondAttribute="trailing" id="3Da-jA-RLx"/>
                             <constraint firstItem="TEs-GQ-xWN" firstAttribute="top" secondItem="evE-dd-pMr" secondAttribute="bottom" constant="65" id="6IH-iM-ln5"/>
                             <constraint firstItem="evE-dd-pMr" firstAttribute="top" secondItem="P8U-kf-mkb" secondAttribute="top" constant="10" id="GFJ-yQ-Cye"/>
@@ -877,7 +884,9 @@ Label  </string>
                             <constraint firstItem="ekW-06-trL" firstAttribute="leading" secondItem="P8U-kf-mkb" secondAttribute="leading" id="TeT-ls-Ns4"/>
                             <constraint firstItem="ekW-06-trL" firstAttribute="trailing" secondItem="P8U-kf-mkb" secondAttribute="trailing" id="UUM-FL-FrV"/>
                             <constraint firstItem="P8U-kf-mkb" firstAttribute="trailing" secondItem="TEs-GQ-xWN" secondAttribute="trailing" id="Vg9-Xi-JtV"/>
+                            <constraint firstItem="unQ-4I-UPo" firstAttribute="leading" secondItem="IDF-XF-2Ta" secondAttribute="leading" id="WJ9-OZ-x1y"/>
                             <constraint firstAttribute="bottom" secondItem="ekW-06-trL" secondAttribute="bottom" id="f1v-ju-qen"/>
+                            <constraint firstItem="unQ-4I-UPo" firstAttribute="top" secondItem="P8U-kf-mkb" secondAttribute="top" id="gVo-YH-zU7"/>
                             <constraint firstItem="evE-dd-pMr" firstAttribute="leading" secondItem="P8U-kf-mkb" secondAttribute="leading" id="k0v-jB-TbO"/>
                             <constraint firstItem="TEs-GQ-xWN" firstAttribute="leading" secondItem="P8U-kf-mkb" secondAttribute="leading" id="lxR-dT-lxi"/>
                             <constraint firstItem="4jh-bR-wXL" firstAttribute="leading" secondItem="P8U-kf-mkb" secondAttribute="leading" id="muP-uc-2iF"/>
@@ -913,12 +922,4 @@ Label  </string>
             <point key="canvasLocation" x="3832.8000000000002" y="875.26236881559225"/>
         </scene>
     </scenes>
-    <resources>
-        <image name="feedback" width="20" height="20"/>
-        <image name="feedback_car_crash" width="38" height="33"/>
-        <image name="overview" width="16" height="14"/>
-        <image name="report_checkmark" width="42" height="28"/>
-        <image name="volume_off" width="18" height="18"/>
-        <image name="volume_up" width="18" height="18"/>
-    </resources>
 </document>

@@ -7,7 +7,7 @@ import CoreLocation
  adjusted by interval between locations.
  */
 @objc(MBReplayLocationManager)
-public class ReplayLocationManager: NavigationLocationManager {
+open class ReplayLocationManager: NavigationLocationManager {
     
     /**
      `speedMultiplier` adjusts the speed of the replay.
@@ -27,7 +27,7 @@ public class ReplayLocationManager: NavigationLocationManager {
         }
     }
     
-    @objc override public var location: CLLocation? {
+    @objc override open var location: CLLocation? {
         get {
             return lastKnownLocation
         }
@@ -59,7 +59,7 @@ public class ReplayLocationManager: NavigationLocationManager {
         delegate?.locationManager?(self, didUpdateLocations: [location])
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(tick), object: nil)
         
-        if currentIndex < locations.count - 1  {
+        if currentIndex < locations.count - 1 {
             let nextLocation = locations[currentIndex+1]
             let interval = nextLocation.timestamp.timeIntervalSince(location.timestamp) / TimeInterval(speedMultiplier)
             let intervalSinceStart = Date().timeIntervalSince(startDate)+interval

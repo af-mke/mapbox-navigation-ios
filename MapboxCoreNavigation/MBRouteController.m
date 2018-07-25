@@ -1,23 +1,32 @@
 #import "MBRouteController.h"
+#import <CommonCrypto/CommonCrypto.h>
 
+const NSNotificationName MBRouteControllerProgressDidChangeNotification             = @"RouteControllerProgressDidChange";
+const NSNotificationName MBRouteControllerDidPassSpokenInstructionPointNotification = @"RouteControllerDidPassSpokenInstructionPoint";
+const NSNotificationName MBRouteControllerDidPassVisualInstructionPointNotification = @"MBRouteControllerDidPassVisualInstructionPoint";
+const NSNotificationName MBRouteControllerWillRerouteNotification                   = @"RouteControllerWillReroute";
+const NSNotificationName MBRouteControllerDidRerouteNotification                    = @"RouteControllerDidReroute";
+const NSNotificationName MBRouteControllerDidFailToRerouteNotification              = @"RouteControllerDidFailToReroute";
 
-NSString *const MBRouteControllerProgressDidChangeNotificationProgressKey               = @"progress";
-NSString *const MBRouteControllerProgressDidChangeNotificationLocationKey               = @"location";
-NSString *const MBRouteControllerProgressDidChangeNotificationSecondsRemainingOnStepKey = @"seconds";
+const MBRouteControllerNotificationUserInfoKey MBRouteControllerRouteProgressKey              = @"progress";
+const MBRouteControllerNotificationUserInfoKey MBRouteControllerLocationKey                   = @"location";
+const MBRouteControllerNotificationUserInfoKey MBRouteControllerRawLocationKey                = @"rawLocation";
+const MBRouteControllerNotificationUserInfoKey MBRouteControllerRoutingErrorKey               = @"error";
+const MBRouteControllerNotificationUserInfoKey MBRouteControllerIsProactiveKey                = @"RouteControllerDidFindFasterRoute";
 
-NSString *const MBRouteControllerDidPassSpokenInstructionPointRouteProgressKey          = @"progress";
-
-NSString *const MBRouteControllerNotificationLocationKey    = @"location";
-NSString *const MBRouteControllerNotificationRouteKey       = @"route";
-NSString *const MBRouteControllerNotificationErrorKey       = @"error";
-
-NSString *const MBRouteControllerNotificationProgressDidChange  = @"RouteControllerProgressDidChange";
-NSString *const MBRouteControllerDidPassSpokenInstructionPoint  = @"RouteControllerDidPassSpokenInstructionPoint";
-NSString *const MBRouteControllerWillReroute                    = @"RouteControllerWillReroute";
-NSString *const MBRouteControllerDidReroute                     = @"RouteControllerDidReroute";
-NSString *const MBRouteControllerDidFailToReroute               = @"RouteControllerDidFailToReroute";
-NSString *const MBRouteControllerDidFindFasterRouteKey          = @"RouteControllerDidFindFasterRoute";
 NSString *const MBErrorDomain = @"ErrorDomain";
-NSString *const MBSpokenInstructionErrorCodeKey = @"MBSpokenInstructionErrorCode";
 
-NSString *const MBNavigationSettingsDidChange = @"MBNavigationSettingsDidChange";
+@implementation NSString (MD5)
+- (NSString * _Nonnull)md5 {
+    const char *cStr = [self UTF8String];
+    unsigned char digest[16];
+    CC_MD5( cStr, (CC_LONG)strlen(cStr), digest );
+    
+    NSMutableString *output = [NSMutableString stringWithCapacity:CC_MD5_DIGEST_LENGTH * 2];
+    
+    for(int i = 0; i < CC_MD5_DIGEST_LENGTH; i++)
+        [output appendFormat:@"%02x", digest[i]];
+    
+    return  output;
+}
+@end

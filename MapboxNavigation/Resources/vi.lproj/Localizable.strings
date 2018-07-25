@@ -1,5 +1,17 @@
+/* Format string for indicating the device volume is low; 1 = device model */
+"DEVICE_VOLUME_LOW" = "Âm lượng %@ Đang Thấp";
+
 /* Dismiss button title on the steps view */
 "DISMISS_STEPS_TITLE" = "Đóng";
+
+/* End Navigation Button Text */
+"END_NAVIGATION" = "Kết thúc Điều hướng";
+
+/* Title used for arrival */
+"END_OF_ROUTE_ARRIVED" = "Đã đến nơi rồi";
+
+/* Comment Placeholder Text */
+"END_OF_ROUTE_TITLE" = "Chúng tôi có thể cải thiện bằng cách nào?";
 
 /* Error message when the SDK is unable to read a spoken instruction. */
 "FAILED_INSTRUCTION" = "Không thể đọc lời chỉ dẫn.";
@@ -31,11 +43,29 @@
 /* Feedback type for Road Closed */
 "FEEDBACK_ROAD_CLOSURE" = "Đường\nĐóng cửa";
 
+/* Message confirming that the user has successfully sent feedback */
+"FEEDBACK_THANK_YOU" = "Cảm ơn bạn đã báo cáo!";
+
+/* Title of view controller for sending feedback */
+"FEEDBACK_TITLE" = "Báo cáo Vấn đề";
+
 /* Format for displaying the first two major ways */
 "LEG_MAJOR_WAYS_FORMAT" = "%1$@ và %2$@";
 
 /* Format string for a short distance or time less than a minimum threshold; 1 = duration remaining */
 "LESS_THAN" = "<%@";
+
+/* Accessibility value of label indicating the absence of a rating */
+"NO_RATING" = "Chưa đánh giá.";
+
+/* Rating Reset To Zero Accessability Hint */
+"RATING_ACCESSIBILITY_RESET" = "Chạm để đặt lại đánh giá.";
+
+/* Format for accessibility label of button for setting a rating; 1 = number of stars */
+"RATING_ACCESSIBILITY_SET" = "Đánh giá %ld sao";
+
+/* Format for accessibility value of label indicating the existing rating; 1 = number of stars */
+"RATING_STARS_FORMAT" = "Đã đánh giá %ld sao.";
 
 /* Indicates that rerouting is in progress */
 "REROUTING" = "Đang tính tuyến mới…";
@@ -51,7 +81,4 @@
 
 /* Format for displaying start and endpoint for leg; 1 = source ; 2 = destination */
 "WAYPOINT_SOURCE_DESTINATION_FORMAT" = "%1$@ và %2$@";
-
-/* Inform user about weak GPS signal */
-"WEAK_GPS" = "Tín hiệu GPS yếu";
 

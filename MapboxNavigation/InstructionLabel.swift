@@ -4,72 +4,54 @@ import MapboxDirections
 
 /// :nodoc:
 @objc(MBInstructionLabel)
-open class InstructionLabel: StylableLabel {
+open class InstructionLabel: StylableLabel, InstructionPresenterDataSource {
     typealias AvailableBoundsHandler = () -> (CGRect)
     var availableBounds: AvailableBoundsHandler!
+    // This optional view can be used for calculating the available width when using e.g. a UITableView or a UICollectionView where the frame is unknown before the cells are displayed. The bounds of `InstructionLabel` will be used if this view is unset.
+    weak var viewForAvailableBoundsCalculation: UIView?
     var shieldHeight: CGFloat = 30
+    var imageRepository: ImageRepository = .shared
+    var imageDownloadCompletion: (() -> Void)?
+    weak var instructionDelegate: VisualInstructionDelegate?
     
-    var instruction: [VisualInstructionComponent]? {
+    var instruction: VisualInstruction? {
         didSet {
-            constructInstructions()
-        }
-    }
-    
-    func constructInstructions() {
-        guard let instruction = instruction else {
-            text = nil
-            return
-        }
-        
-        let string = NSMutableAttributedString()
-        
-        // Add text or image
-        for component in instruction {
-            let isFirst = component == instruction.first
-            let joinChar = !isFirst ? " " : ""
-            
-            if let shieldKey = component.shieldKey(), let _ = component.imageURL {
-                if let cachedImage = component.cachedShield(shieldKey) {
-                    string.append(attributedString(with: cachedImage))
-                } else {
-                    // Download shield and display road code in the meantime
-                    if let text = component.text {
-                        string.append(NSAttributedString(string: joinChar + text, attributes: attributes))
-                    }
-                    DispatchQueue.main.async {
-                        component.shieldImage(height: self.shieldHeight, completion: { [unowned self] (image) in
-                            guard image != nil, component.cachedShield(shieldKey) != nil else { return }
-                            self.constructInstructions()
-                        })
-                    }
-                }
-            } else if let text = component.text {
-                string.append(NSAttributedString(string: (joinChar+text).abbreviated(toFit: availableBounds(), font: font), attributes: attributes))
+            guard let instruction = instruction else {
+                text = nil
+                instructionPresenter = nil
+                return
             }
+            let update: InstructionPresenter.ShieldDownloadCompletion = { [weak self] (attributedText) in
+                self?.attributedText = attributedText
+                self?.imageDownloadCompletion?()
+            }
+            
+            
+            let presenter = InstructionPresenter(instruction, dataSource: self, imageRepository: imageRepository, downloadCompletion: update)
+            
+            let attributed = presenter.attributedText()
+            attributedText = instructionDelegate?.label?(self, willPresent: instruction, as: attributed) ?? attributed
+            instructionPresenter = presenter
         }
-        
-        attributedText = string
     }
-    
-    var attributes: [NSAttributedStringKey: Any] {
-        return [.font: font, .foregroundColor: textColor]
-    }
-    
-    func attributedString(with shieldImage: UIImage) -> NSAttributedString {
-        let attachment = ShieldAttachment()
-        attachment.font = font
-        attachment.image = shieldImage
-        return NSAttributedString(attachment: attachment)
-    }
+
+    private var instructionPresenter: InstructionPresenter?
 }
 
-class ShieldAttachment: NSTextAttachment {
+/**
+ The `VoiceControllerDelegate` protocol defines a method that allows an object to customize presented visual instructions.
+ */
+@objc(MBVisualInstructionDelegate)
+public protocol VisualInstructionDelegate: class {
     
-    var font: UIFont = UIFont.systemFont(ofSize: 17)
-    
-    override func attachmentBounds(for textContainer: NSTextContainer?, proposedLineFragment lineFrag: CGRect, glyphPosition position: CGPoint, characterIndex charIndex: Int) -> CGRect {
-        guard let image = image else { return super.attachmentBounds(for: textContainer, proposedLineFragment: lineFrag, glyphPosition: position, characterIndex: charIndex)}
-        let mid = font.descender + font.capHeight
-        return CGRect(x: 0, y: font.descender - image.size.height / 2 + mid + 2, width: image.size.width, height: image.size.height).integral
-    }
+    /**
+     Called when an InstructionLabel will present a visual instruction.
+     
+     - parameter label: The label that the instruction will be presented on.
+     - parameter instruction: the `VisualInstruction` that will be presented.
+     - parameter presented: the formatted string that is provided by the instruction presenter
+     - returns: optionally, a customized NSAttributedString that will be presented instead of the default, or if nil, the default behavior will be used.
+     */
+    @objc(label:willPresentVisualInstruction:asAttributedString:)
+    optional func label(_ label: InstructionLabel, willPresent instruction: VisualInstruction, as presented: NSAttributedString) -> NSAttributedString?
 }

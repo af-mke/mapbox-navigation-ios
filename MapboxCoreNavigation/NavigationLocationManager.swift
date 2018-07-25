@@ -9,8 +9,7 @@ import UIKit
 #endif
 
 /**
- `NavigationLocationManager` is the base location manager which handles
- permissions and background modes.
+ `NavigationLocationManager` is the base location manager which handles permissions and background modes.
  */
 @objc(MBNavigationLocationManager)
 open class NavigationLocationManager: CLLocationManager {
@@ -20,21 +19,10 @@ open class NavigationLocationManager: CLLocationManager {
     override public init() {
         super.init()
         
-        let always = Bundle.main.locationAlwaysUsageDescription
-        let both = Bundle.main.locationAlwaysAndWhenInUseUsageDescription
+        requestWhenInUseAuthorization()
         
-        if always != nil || both != nil {
-            requestAlwaysAuthorization()
-        } else {
-            requestWhenInUseAuthorization()
+        if Bundle.main.backgroundModes.contains("location") {
+            allowsBackgroundLocationUpdates = true
         }
-        
-        if #available(iOS 9.0, *) {
-            if Bundle.main.backgroundModes.contains("location") {
-                allowsBackgroundLocationUpdates = true
-            }
-        }
-        
-        desiredAccuracy = kCLLocationAccuracyBestForNavigation
     }
 }

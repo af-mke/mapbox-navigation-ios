@@ -1,9 +1,9 @@
 module: MapboxNavigation
 author: Mapbox
-author_url: https://www.mapbox.com/navigation-sdk/
+author_url: https://www.mapbox.com/ios-sdk/navigation/
 github_url: https://github.com/mapbox/mapbox-navigation-ios
 dash_url: https://www.mapbox.com/mapbox-navigation-ios/navigation/docsets/MapboxNavigation.xml
-copyright: '© 2014–2017 [Mapbox](https://www.mapbox.com/). See [license](https://github.com/mapbox/mapbox-navigation-ios/blob/master/LICENSE.md) for more details.'
+copyright: '© 2014–2018 [Mapbox](https://www.mapbox.com/). See [license](https://github.com/mapbox/mapbox-navigation-ios/blob/master/LICENSE.md) for more details.'
 
 head: |
   <link rel='shortcut icon' href='https://www.mapbox.com/img/favicon.ico' type='image/x-icon' />
@@ -13,7 +13,9 @@ hide_documentation_coverage: Yes
 custom_categories:
   - name: Guides
     children:
-      - Storyboards
+      - Using Map Matching
+      - Reduce Memory Usage
+      - Styling the UI
   - name: Turn-by-turn UI
     children:
       - NavigationViewController
@@ -26,6 +28,7 @@ custom_categories:
       - RouteProgress
       - RouteLegProgress
       - RouteStepProgress
+      - RouteControllerNotificationUserInfoKey
   - name: Maps
     children:
       - NavigationMapView
@@ -41,22 +44,6 @@ custom_categories:
     children:
       - DistanceFormatter
       - RouteStepFormatter
-  - name: Notifications
-    children:
-      - AlertLevel
-      - RouteControllerAlertLevelDidChange
-      - RouteControllerAlertLevelDidChangeNotificationDistanceToEndOfManeuverKey
-      - RouteControllerAlertLevelDidChangeNotificationRouteProgressKey
-      - RouteControllerDidFailToReroute
-      - RouteControllerDidReroute
-      - RouteControllerNotificationErrorKey
-      - RouteControllerNotificationLocationKey
-      - RouteControllerNotificationRouteKey
-      - RouteControllerProgressDidChange
-      - RouteControllerProgressDidChangeNotificationLocationKey
-      - RouteControllerProgressDidChangeNotificationProgressKey
-      - RouteControllerProgressDidChangeNotificationSecondsRemainingOnStepKey
-      - RouteControllerWillReroute
   - name: UI Components
     children:
       - RouteTableViewController

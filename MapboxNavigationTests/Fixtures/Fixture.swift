@@ -52,9 +52,14 @@ internal class Fixture {
         })
     }
     
+    class var blankStyle: URL {
+        let path = Bundle(for: self).path(forResource: "EmptyStyle", ofType: "json")
+        return URL(fileURLWithPath: path!)
+    }
+    
     class func route(from jsonFile: String, waypoints: [Waypoint]) -> Route {
         let response = JSONFromFileNamed(name: jsonFile)
         let jsonRoute = (response["routes"] as! [AnyObject]).first as! [String : Any]
-        return Route(json: jsonRoute, waypoints: waypoints, routeOptions: RouteOptions(waypoints: waypoints))
+        return Route(json: jsonRoute, waypoints: waypoints, options: RouteOptions(waypoints: waypoints))
     }
 }

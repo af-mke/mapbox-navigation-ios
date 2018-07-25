@@ -15,7 +15,10 @@ open class BottomBannerView: UIView {
     weak var distanceRemainingLabel: DistanceRemainingLabel!
     weak var arrivalTimeLabel: ArrivalTimeLabel!
     weak var cancelButton: CancelButton!
-    weak var dividerView: SeparatorView!
+    // Vertical divider between cancel button and the labels
+    weak var verticalDividerView: SeparatorView!
+    // Horizontal divider between the map view and the bottom banner
+    weak var horizontalDividerView: SeparatorView!
     weak var routeController: RouteController!
     weak var delegate: BottomBannerViewDelegate?
     
@@ -54,7 +57,6 @@ open class BottomBannerView: UIView {
     }
     
     func commonInit() {
-        distanceFormatter.numberFormatter.locale = .nationalizedCurrent
         dateFormatter.timeStyle = .short
         dateComponentsFormatter.allowedUnits = [.hour, .minute]
         dateComponentsFormatter.unitsStyle = .abbreviated
@@ -70,7 +72,6 @@ open class BottomBannerView: UIView {
     
     override open func prepareForInterfaceBuilder() {
         super.prepareForInterfaceBuilder()
-        dividerView.backgroundColor = .red
         timeRemainingLabel.text = "22 min"
         distanceRemainingLabel.text = "4 mi"
         arrivalTimeLabel.text = "10:09"
@@ -133,5 +134,3 @@ open class BottomBannerView: UIView {
         }
     }
 }
-
-
